@@ -132,7 +132,6 @@ exports.addComment = async (req, res, next) => {
     const authorId = req.userId;
     const createdBy = req.name;
     const post = await Post.findById(postId);
-    // .populate("author");
     if (!post) {
       const error = new Error("Could not find post.");
       error.statusCode = 404;
