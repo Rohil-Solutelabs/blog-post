@@ -64,6 +64,30 @@ exports.adminDeletePost = async (req, res, next) => {
   }
 };
 
+exports.deleteComment = async (req, res, next) => {
+  const postId = req.params.postId;
+  const commentId = req.params.commentId;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      const error = new Error("Could not find post.");
+      error.statusCode = 404;
+      throw error;
+    }
+    const comment = post.comments.find((c) => c.id === commentId);
+    post.comments.pull(comment);
+    await post.save();
+    res.status(200).json({
+      message: "Comment Deleted Successfully",
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.deleteUser = async (req, res, next) => {
   const userId = req.params.userId;
   try {

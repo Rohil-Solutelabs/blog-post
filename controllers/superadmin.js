@@ -1,4 +1,6 @@
 const Admin = require("../models/admin");
+const Post = require("../models/post");
+const User = require("../models/user");
 
 exports.deleteAdmin = async (req, res, next) => {
   const adminId = req.params.adminId;
@@ -11,6 +13,28 @@ exports.deleteAdmin = async (req, res, next) => {
     }
     await Admin.findByIdAndRemove(adminId);
     res.status(200).json({ message: "Deleted admin" });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.superadminDeletePost = async (req, res, next) => {
+  const postId = req.params.postId;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      const error = new Error("Could not find post.");
+      error.statusCode = 404;
+      throw error;
+    }
+    await Post.findByIdAndRemove(postId);
+    const user = await User.findById(post.author);
+    user.posts.pull(postId);
+    await user.save();
+    res.status(200).json({ message: "Deleted post" });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

@@ -11,4 +11,11 @@ router.delete(
   superadminController.deleteAdmin
 );
 
+router.delete(
+  "/deletepost/:postId",
+  isAuthmiddleware.isauth,
+  isAuthmiddleware.checkrole(["superadmin"]),
+  superadminController.superadminDeletePost
+);
+
 module.exports = router;

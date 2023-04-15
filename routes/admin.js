@@ -27,6 +27,13 @@ router.delete(
 );
 
 router.delete(
+  "/post/:postId/comment/:commentId",
+  isAuthmiddleware.isauth,
+  isAuthmiddleware.checkrole(["admin", "superadmin"]),
+  adminController.deleteComment
+); //u
+
+router.delete(
   "/deleteuser/:userId",
   isAuthmiddleware.isauth,
   isAuthmiddleware.checkrole(["admin", "superadmin"]),

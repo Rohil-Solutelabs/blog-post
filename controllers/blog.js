@@ -160,7 +160,7 @@ exports.deleteComment = async (req, res, next) => {
   const postId = req.params.postId;
   const commentId = req.params.commentId;
   try {
-    const authorId = req.userId;
+    const userId = req.userId;
     const post = await Post.findById(postId);
     if (!post) {
       const error = new Error("Could not find post.");
@@ -168,16 +168,19 @@ exports.deleteComment = async (req, res, next) => {
       throw error;
     }
     const comment = post.comments.find((c) => c.id === commentId);
-    if (comment.author.toString() !== authorId) {
-      return res
-        .status(401)
-        .json({ message: "You are not authorized to delete this comment" });
+    if (
+      comment.author.toString() === userId ||
+      post.author.toString() === userId
+    ) {
+      post.comments.pull(comment);
+      await post.save();
+      res.status(200).json({
+        message: "Comment Deleted Successfully",
+      });
     }
-    post.comments.pull(comment);
-    await post.save();
-    res.status(200).json({
-      message: "Comment Deleted Successfully",
-    });
+    res
+      .status(401)
+      .json({ message: "You are not authorized to delete this comment" });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
