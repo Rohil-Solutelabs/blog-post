@@ -40,4 +40,11 @@ router.delete(
   adminController.deleteUser
 );
 
+router.put(
+  "/userStatus/:userId",
+  isAuthmiddleware.isauth,
+  isAuthmiddleware.checkrole(["admin", "superadmin"]),
+  adminController.changeUserStatus
+);
+
 module.exports = router;

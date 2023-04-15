@@ -79,6 +79,9 @@ exports.login = async (req, res, next) => {
       user = await Admin.findOne({ email: email });
     } else {
       user = await User.findOne({ email: email });
+      if(user && user.status !== "active"){
+        return res.status(403).json({ message: "This user has been DeActivated currently"})
+      }
     }
     if (!user) {
       const error = new Error("A user with this email could not be found.");

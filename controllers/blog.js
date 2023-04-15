@@ -4,8 +4,6 @@ const User = require("../models/user");
 
 exports.getPosts = async (req, res, next) => {
   try {
-    const userId = req.userId;
-    const user = await User.findById(userId);
     const posts = await Post.find({ "dislikes.totalDislikes": { $lt: 3 } })
       .populate({
         path: "author",

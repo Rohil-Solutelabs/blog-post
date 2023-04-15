@@ -22,6 +22,10 @@ const userSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  status: {
+    type: String,
+    default: "active",
+  },
   posts: [
     {
       type: Schema.Types.ObjectId,
