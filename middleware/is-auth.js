@@ -35,3 +35,12 @@ exports.checkrole = (roles) => async (req, res, next) => {
   }
   next();
 };
+
+exports.isSubscribed = (req,res,next) => {
+  if(!req.userSubsribed){
+    return res.status(403).json({
+      message: "Access to these blogs requires a subscription.",
+    });
+  }
+  next();
+}

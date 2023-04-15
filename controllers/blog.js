@@ -6,12 +6,6 @@ exports.getPosts = async (req, res, next) => {
   try {
     const userId = req.userId;
     const user = await User.findById(userId);
-
-    if (!user.subscribed) {
-      res.status(403).json({
-        message: "Access to these blogs requires a subscription.",
-      });
-    }
     const posts = await Post.find({ "dislikes.totalDislikes": { $lt: 3 } })
       .populate({
         path: "author",
@@ -42,7 +36,7 @@ exports.getSubscription = async (req, res, next) => {
     }
     if(user.subscribed === true){
       return res.status(409).json({
-        message: "You Already Have Subscription.",
+        message: "You Already Have a Subscription.",
       });
     }
     user.subscribed = true;
