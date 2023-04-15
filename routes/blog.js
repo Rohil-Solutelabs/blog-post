@@ -9,8 +9,15 @@ const router = express.Router();
 router.get(
   "/posts",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user", "admin", "superadmin"]),
+  isAuthmiddleware.checkrole(["user"]),
   blogController.getPosts
+);
+
+router.get(
+  "/subscription",
+  isAuthmiddleware.isauth,
+  isAuthmiddleware.checkrole(["user"]),
+  blogController.getSubscription
 );
 
 router.post(
@@ -22,28 +29,28 @@ router.post(
     body("description").trim().isLength({ min: 5 }),
   ],
   blogController.createPost
-); //user
+); 
 
 router.post(
   "/posts/:postId/like",
   isAuthmiddleware.isauth,
   isAuthmiddleware.checkrole(["user"]),
   blogController.postLike
-); //user
+);
 
 router.post(
   "/posts/:postId/dislike",
   isAuthmiddleware.isauth,
   isAuthmiddleware.checkrole(["user"]),
   blogController.postDislike
-); //user
+);
 
 router.get(
   "/post/:postId",
   isAuthmiddleware.isauth,
   isAuthmiddleware.checkrole(["user", "admin", "superadmin"]),
   blogController.getPost
-); //user
+);
 
 router.post(
   "/post/comment/:postId",
@@ -51,27 +58,27 @@ router.post(
   isAuthmiddleware.checkrole(["user"]),
   blogController.addComment
 );
-//user
+
 router.delete(
   "/post/:postId/comment/:commentId",
   isAuthmiddleware.isauth,
   isAuthmiddleware.checkrole(["user"]),
   blogController.deleteComment
-); //user
+);
 
 router.post(
   "/posts/:postId/comments/:commentId/like",
   isAuthmiddleware.isauth,
   isAuthmiddleware.checkrole(["user"]),
   blogController.commentLike
-); //user
+);
 
 router.post(
   "/posts/:postId/comments/:commentId/dislike",
   isAuthmiddleware.isauth,
   isAuthmiddleware.checkrole(["user"]),
   blogController.commentDislike
-); //user
+);
 
 router.put(
   "/post/:postId",
@@ -82,13 +89,13 @@ router.put(
     body("description").trim().isLength({ min: 5 }),
   ],
   blogController.updatePost
-); //user
+);
 
 router.delete(
   "/post/:postId",
   isAuthmiddleware.isauth,
   isAuthmiddleware.checkrole(["user"]),
   blogController.deletePost
-); //user
+);
 
 module.exports = router;

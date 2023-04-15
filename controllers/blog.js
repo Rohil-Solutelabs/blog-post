@@ -4,6 +4,14 @@ const User = require("../models/user");
 
 exports.getPosts = async (req, res, next) => {
   try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+
+    if (!user.subscribed) {
+      res.status(403).json({
+        message: "Access to these blogs requires a subscription.",
+      });
+    }
     const posts = await Post.find({ "dislikes.totalDislikes": { $lt: 3 } })
       .populate({
         path: "author",
@@ -13,6 +21,34 @@ exports.getPosts = async (req, res, next) => {
     res.status(200).json({
       message: "Fetched posts successfully.",
       posts: posts,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getSubscription = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found.",
+      });
+    }
+    if(user.subscribed === true){
+      return res.status(409).json({
+        message: "You Already Have Subscription.",
+      });
+    }
+    user.subscribed = true;
+    await user.save();
+    res.status(200).json({
+      message: "Subscribed successfully.",
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -203,10 +239,9 @@ exports.postLike = async (req, res, next) => {
 
     if (post.likes.likedBy.includes(user)) {
       return res
-        .status(400)
+        .status(409)
         .json({ message: "You have already liked this post" });
     }
-    // If the user has already disliked the post, remove them from the dislikedBy array
     if (post.dislikes.disLikedBy.includes(user)) {
       post.dislikes.disLikedBy = post.dislikes.disLikedBy.filter((userId) => {
         return userId.toString() !== user.toString();
@@ -240,11 +275,10 @@ exports.postDislike = async (req, res, next) => {
     }
     if (post.dislikes.disLikedBy.includes(user)) {
       return res
-        .status(400)
+        .status(409)
         .json({ message: "You have already disliked this post" });
     }
 
-    // If the user has already liked the post, remove them from the likedBy array
     if (post.likes.likedBy.includes(user)) {
       post.likes.likedBy = post.likes.likedBy.filter((userId) => {
         return userId.toString() !== user.toString();
@@ -282,11 +316,10 @@ exports.commentLike = async (req, res, next) => {
     }
     if (comment.likes.likedBy.includes(user)) {
       return res
-        .status(400)
+        .status(409)
         .json({ message: "You have already liked this comment" });
     }
 
-    // If the user has already disliked the comment, remove them from the dislikedBy array
     if (comment.dislikes.disLikedBy.includes(user)) {
       comment.dislikes.disLikedBy = comment.dislikes.disLikedBy.filter(
         (userId) => {
@@ -326,11 +359,10 @@ exports.commentDislike = async (req, res, next) => {
     }
     if (comment.dislikes.disLikedBy.includes(user)) {
       return res
-        .status(400)
+        .status(409)
         .json({ message: "You have already Disliked this comment" });
     }
 
-    // If the user has already disliked the comment, remove them from the dislikedBy array
     if (comment.likes.likedBy.includes(user)) {
       comment.likes.likedBy = comment.likes.likedBy.filter((userId) => {
         return userId.toString() !== user.toString();
