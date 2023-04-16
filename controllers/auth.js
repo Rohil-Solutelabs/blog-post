@@ -38,6 +38,12 @@ exports.signup = async (req, res, next) => {
         role: role,
       });
     } else if (role === "superadmin") {
+      const superAdminCount = await SuperAdmin.countDocuments();
+      if (superAdminCount >= 1) {
+        return res
+          .status(422)
+          .json({ message: "Another SuperAdmin signup is not allowed." });
+      }
       user = new SuperAdmin({
         email: email,
         password: hashedPassword,
