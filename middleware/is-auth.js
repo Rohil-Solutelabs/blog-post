@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+
 require("dotenv").config();
 
 exports.isauth = (req, res, next) => {
@@ -34,4 +36,23 @@ exports.checkrole = (roles) => async (req, res, next) => {
       .json({ message: "Sorry, you cannot access this route!" });
   }
   next();
+};
+
+exports.checkstatus = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(500).json({ message: "User not found" });
+    }
+    if (user.status === "inactive") {
+      return res.status(403).json({
+        message: "User inactive",
+      });
+    } else {
+      next();
+    }
+  } catch (err) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
 };

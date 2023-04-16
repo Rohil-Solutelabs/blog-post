@@ -22,6 +22,34 @@ exports.getPosts = async (req, res, next) => {
   }
 };
 
+exports.getSubscription = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found.",
+      });
+    }
+    if (user.subscribed === true) {
+      return res.status(409).json({
+        message: "You already have a subscription.",
+      });
+    }
+    user.subscribed = true;
+    await user.save();
+    res.status(200).json({
+      message: "Subscribed successfully.",
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.createPost = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -167,6 +195,9 @@ exports.deleteComment = async (req, res, next) => {
       throw error;
     }
     const comment = post.comments.find((c) => c.id === commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
     if (
       comment.author.toString() === userId ||
       post.author.toString() === userId

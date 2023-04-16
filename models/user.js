@@ -18,6 +18,14 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  subscribed: {
+    type: Boolean,
+    default: false,
+  },
+  status: {
+    type: String,
+    default: "active",
+  },
   posts: [
     {
       type: Schema.Types.ObjectId,

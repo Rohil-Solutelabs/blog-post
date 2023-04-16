@@ -3,92 +3,123 @@ const { body } = require("express-validator");
 
 const blogController = require("../controllers/blog");
 const isAuthmiddleware = require("../middleware/is-auth");
+const { isSubscribed } = require("../middleware/is-subscribed");
 
 const router = express.Router();
 
 router.get(
   "/posts",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user", "admin", "superadmin"]),
+  isAuthmiddleware.checkstatus,
+  isAuthmiddleware.checkrole(["user"]),
+  isSubscribed,
   blogController.getPosts
+);
+
+router.put(
+  "/subscription",
+  isAuthmiddleware.isauth,
+  isAuthmiddleware.checkstatus,
+  isAuthmiddleware.checkrole(["user"]),
+  blogController.getSubscription
 );
 
 router.post(
   "/post",
   isAuthmiddleware.isauth,
+  isAuthmiddleware.checkstatus,
   isAuthmiddleware.checkrole(["user"]),
+  isSubscribed,
   [
     body("title").trim().isLength({ min: 5 }),
     body("description").trim().isLength({ min: 5 }),
   ],
   blogController.createPost
-); //user
+);
 
 router.post(
   "/posts/:postId/like",
   isAuthmiddleware.isauth,
+  isAuthmiddleware.checkstatus,
   isAuthmiddleware.checkrole(["user"]),
+  isSubscribed,
   blogController.postLike
-); //user
+);
 
 router.post(
   "/posts/:postId/dislike",
   isAuthmiddleware.isauth,
+  isAuthmiddleware.checkstatus,
   isAuthmiddleware.checkrole(["user"]),
+  isSubscribed,
   blogController.postDislike
-); //user
+);
 
 router.get(
   "/post/:postId",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user", "admin", "superadmin"]),
+  isAuthmiddleware.checkstatus,
+  isAuthmiddleware.checkrole(["user"]),
+  isSubscribed,
   blogController.getPost
-); //user
+);
 
 router.post(
-  "/post/comment/:postId",
+  "/posts/:postId/comment",
   isAuthmiddleware.isauth,
+  isAuthmiddleware.checkstatus,
   isAuthmiddleware.checkrole(["user"]),
+  isSubscribed,
   blogController.addComment
 );
-//user
+
 router.delete(
-  "/post/:postId/comment/:commentId",
+  "/posts/:postId/comment/:commentId",
   isAuthmiddleware.isauth,
+  isAuthmiddleware.checkstatus,
   isAuthmiddleware.checkrole(["user"]),
+  isSubscribed,
   blogController.deleteComment
-); //user
+);
 
 router.post(
   "/posts/:postId/comments/:commentId/like",
   isAuthmiddleware.isauth,
+  isAuthmiddleware.checkstatus,
   isAuthmiddleware.checkrole(["user"]),
+  isSubscribed,
   blogController.commentLike
-); //user
+);
 
 router.post(
   "/posts/:postId/comments/:commentId/dislike",
   isAuthmiddleware.isauth,
+  isAuthmiddleware.checkstatus,
   isAuthmiddleware.checkrole(["user"]),
+  isSubscribed,
   blogController.commentDislike
-); //user
+);
 
 router.put(
-  "/post/:postId",
+  "/posts/:postId",
   isAuthmiddleware.isauth,
+  isAuthmiddleware.checkstatus,
   isAuthmiddleware.checkrole(["user"]),
+  isSubscribed,
   [
     body("title").trim().isLength({ min: 5 }),
     body("description").trim().isLength({ min: 5 }),
   ],
   blogController.updatePost
-); //user
+);
 
 router.delete(
-  "/post/:postId",
+  "/posts/:postId",
   isAuthmiddleware.isauth,
+  isAuthmiddleware.checkstatus,
   isAuthmiddleware.checkrole(["user"]),
+  isSubscribed,
   blogController.deletePost
-); //user
+);
 
 module.exports = router;

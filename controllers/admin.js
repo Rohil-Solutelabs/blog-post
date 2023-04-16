@@ -107,3 +107,29 @@ exports.deleteUser = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.changeUserStatus = async (req, res, next) => {
+  const userId = req.params.userId;
+  let newStatus;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      const error = new Error("Could not find user!");
+      error.statusCode = 404;
+      throw error;
+    }
+    if (user.status === "active") {
+      newStatus = "inactive";
+    } else {
+      newStatus = "active";
+    }
+    user.status = newStatus;
+    await user.save();
+    res.status(200).json({ message: `Status changed to ${newStatus}` });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};

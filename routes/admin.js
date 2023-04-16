@@ -31,13 +31,20 @@ router.delete(
   isAuthmiddleware.isauth,
   isAuthmiddleware.checkrole(["admin", "superadmin"]),
   adminController.deleteComment
-); //u
+);
 
 router.delete(
   "/deleteuser/:userId",
   isAuthmiddleware.isauth,
   isAuthmiddleware.checkrole(["admin", "superadmin"]),
   adminController.deleteUser
+);
+
+router.put(
+  "/userStatus/:userId",
+  isAuthmiddleware.isauth,
+  isAuthmiddleware.checkrole(["admin", "superadmin"]),
+  adminController.changeUserStatus
 );
 
 module.exports = router;
