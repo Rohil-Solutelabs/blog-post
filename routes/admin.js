@@ -8,7 +8,7 @@ const router = express.Router();
 router.get(
   "/users",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["admin","superadmin"]),
+  isAuthmiddleware.checkrole(["admin", "superadmin"]),
   adminController.getUsers
 );
 

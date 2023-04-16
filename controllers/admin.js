@@ -90,7 +90,7 @@ exports.deleteComment = async (req, res, next) => {
 
 exports.getUsers = async (req, res, next) => {
   try {
-    const user = await User.find().select("_id email name")
+    const user = await User.find().select("_id email name posts")
     res.status(200).json({
       message: "Fetched Users successfully.",
       users: user,
