@@ -2,6 +2,21 @@ const Admin = require("../models/admin");
 const Post = require("../models/post");
 const User = require("../models/user");
 
+exports.getAdmins = async (req, res, next) => {
+  try {
+    const admin = await Admin.find().select("_id email name")
+    res.status(200).json({
+      message: "Fetched Admins successfully.",
+      admins: admin,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
+
 exports.deleteAdmin = async (req, res, next) => {
   const adminId = req.params.adminId;
   try {

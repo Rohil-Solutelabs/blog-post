@@ -204,7 +204,7 @@ exports.deleteComment = async (req, res, next) => {
     ) {
       post.comments.pull(comment);
       await post.save();
-      res.status(200).json({
+      return res.status(200).json({
         message: "Comment Deleted Successfully",
       });
     }
@@ -228,10 +228,6 @@ exports.postLike = async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    if (!post.likes.likedBy) {
-      post.likes.likedBy = [];
-    }
-
     if (post.likes.likedBy.includes(user)) {
       return res
         .status(400)
@@ -266,15 +262,11 @@ exports.postDislike = async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    if (!post.dislikes.disLikedBy) {
-      post.dislikes.disLikedBy = [];
-    }
     if (post.dislikes.disLikedBy.includes(user)) {
       return res
         .status(400)
         .json({ message: "You have already disliked this post" });
     }
-
     // If the user has already liked the post, remove them from the likedBy array
     if (post.likes.likedBy.includes(user)) {
       post.likes.likedBy = post.likes.likedBy.filter((userId) => {
@@ -308,15 +300,11 @@ exports.commentLike = async (req, res, next) => {
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
-    if (!comment.likes.likedBy) {
-      comment.likes.likedBy = [];
-    }
     if (comment.likes.likedBy.includes(user)) {
       return res
         .status(400)
         .json({ message: "You have already liked this comment" });
     }
-
     // If the user has already disliked the comment, remove them from the dislikedBy array
     if (comment.dislikes.disLikedBy.includes(user)) {
       comment.dislikes.disLikedBy = comment.dislikes.disLikedBy.filter(
@@ -352,15 +340,11 @@ exports.commentDislike = async (req, res, next) => {
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
-    if (!comment.dislikes.disLikedBy) {
-      comment.dislikes.disLikedBy = [];
-    }
     if (comment.dislikes.disLikedBy.includes(user)) {
       return res
         .status(400)
         .json({ message: "You have already Disliked this comment" });
     }
-
     // If the user has already disliked the comment, remove them from the dislikedBy array
     if (comment.likes.likedBy.includes(user)) {
       comment.likes.likedBy = comment.likes.likedBy.filter((userId) => {
@@ -368,7 +352,6 @@ exports.commentDislike = async (req, res, next) => {
       });
       comment.likes.totalLikes -= 1;
     }
-
     comment.dislikes.totalDislikes += 1;
     comment.dislikes.disLikedBy.push(user);
     await post.save();

@@ -6,6 +6,13 @@ const isAuthmiddleware = require("../middleware/is-auth");
 const router = express.Router();
 
 router.get(
+  "/users",
+  isAuthmiddleware.isauth,
+  isAuthmiddleware.checkrole(["admin","superadmin"]),
+  adminController.getUsers
+);
+
+router.get(
   "/allposts",
   isAuthmiddleware.isauth,
   isAuthmiddleware.checkrole(["admin", "superadmin"]),

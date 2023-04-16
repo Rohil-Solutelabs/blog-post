@@ -4,6 +4,13 @@ const isAuthmiddleware = require("../middleware/is-auth");
 
 const router = express.Router();
 
+router.get(
+  "/admins",
+  isAuthmiddleware.isauth,
+  isAuthmiddleware.checkrole(["superadmin"]),
+  superadminController.getAdmins
+);
+
 router.delete(
   "/deleteadmin/:adminId",
   isAuthmiddleware.isauth,
