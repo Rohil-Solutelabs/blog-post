@@ -144,3 +144,46 @@ exports.login = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.updatePassword = async (req, res, next) => {
+  const baseRole = req.baseUrl.split("/")[1];
+  const oldPassword = req.body.oldpassword;
+  const newPassword = req.body.newpassword;
+  try {
+    let user;
+    if (baseRole === "superadmin") {
+      user = await SuperAdmin.findById(req.userId);
+    } else if (baseRole === "admin") {
+      user = await Admin.findById(req.userId);
+    } else {
+      user = await User.findById(req.userId);
+      if (user && user.status !== "active") {
+        return res
+          .status(403)
+          .json({ message: "This user has been deActivated currently" });
+      }
+    }
+    if (!user) {
+      const error = new Error("A user with this email could not be found.");
+      error.statusCode = 401;
+      throw error;
+    }
+    const isEqual = await bcrypt.compare(oldPassword, user.password);
+    if (!isEqual) {
+      const error = new Error("Your old Password is incorrect.");
+      error.statusCode = 401;
+      throw error;
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashedPassword;
+    await user.save();
+    res.status(200).json({
+      message: "Password Updated Successfully",
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};

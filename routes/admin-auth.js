@@ -1,6 +1,7 @@
 const express = require("express");
 const { body } = require("express-validator");
 
+const isAuthmiddleware = require("../middleware/is-auth");
 const authController = require("../controllers/auth");
 
 const router = express.Router();
@@ -19,5 +20,12 @@ router.put(
 );
 
 router.post("/login", authController.login);
+
+router.put(
+  "/update-password",
+  [body("newpassword").trim().isLength({ min: 5 })],
+  isAuthmiddleware.isauth,
+  authController.updatePassword
+);
 
 module.exports = router;
