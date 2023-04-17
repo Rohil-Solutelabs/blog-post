@@ -157,11 +157,6 @@ exports.updatePassword = async (req, res, next) => {
       user = await Admin.findById(req.userId);
     } else {
       user = await User.findById(req.userId);
-      if (user && user.status !== "active") {
-        return res
-          .status(403)
-          .json({ message: "This user has been deActivated currently" });
-      }
     }
     if (!user) {
       const error = new Error("A user with this email could not be found.");
