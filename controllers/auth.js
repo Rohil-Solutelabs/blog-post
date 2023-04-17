@@ -4,8 +4,19 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const Admin = require("../models/admin");
 const SuperAdmin = require("../models/super-admin");
+const nodemailer = require("nodemailer");
 
 require("dotenv").config();
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_ID,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 exports.signup = async (req, res, next) => {
   const baseRole = req.baseUrl.split("/")[1];
@@ -63,6 +74,13 @@ exports.signup = async (req, res, next) => {
       message: "User Created!",
       userId: result._id,
       role: result.role,
+    });
+    // send email for successful signup
+    return transporter.sendMail({
+      from: process.env.EMAIL_ID,
+      to: email,
+      subject: "Welcome to Blog site",
+      html: "Successful signup",
     });
   } catch (err) {
     if (!err.statusCode) {
