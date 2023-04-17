@@ -16,6 +16,15 @@ router.get(
   blogController.getPosts
 );
 
+router.get(
+  "/posts/search",
+  isAuthmiddleware.isauth,
+  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkstatus,
+  isSubscribed,
+  blogController.searchPost
+);
+
 router.put(
   "/subscription",
   isAuthmiddleware.isauth,

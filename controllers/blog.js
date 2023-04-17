@@ -22,6 +22,29 @@ exports.getPosts = async (req, res, next) => {
   }
 };
 
+exports.searchPost = async (req, res, next) => {
+  const search = req.query.title;
+  try {
+    const posts = await Post.find({
+      title: { $regex: search, $options: "i" },
+    })
+      .populate({
+        path: "author",
+        select: "_id",
+      })
+      .sort({ updatedAt: -1 });
+    res.status(200).json({
+      message: "Post found successfully.",
+      posts: posts,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.getSubscription = async (req, res, next) => {
   try {
     const userId = req.userId;
