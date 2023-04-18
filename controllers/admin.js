@@ -24,7 +24,10 @@ exports.getAllPosts = async (req, res, next) => {
 exports.getPost = async (req, res, next) => {
   const postId = req.params.postId;
   try {
-    const post = await Post.findById(postId).populate("author");
+    const post = await Post.findById(postId).populate({
+      path: "author",
+      select: "_id email name posts",
+    });
     if (!post) {
       const error = new Error("Could not find post.");
       error.statusCode = 404;
