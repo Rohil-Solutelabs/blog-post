@@ -8,7 +8,7 @@ exports.getAllPosts = async (req, res, next) => {
         path: "author",
         select: "_id",
       })
-      .sort({ createdAt: -1 });
+      .sort({ updatedAt: -1, likes: -1, comments: -1, dislikes: 1 });
     res.status(200).json({
       message: "Fetched posts successfully.",
       posts: posts,
