@@ -147,6 +147,10 @@ exports.login = async (req, res, next) => {
 
 exports.updatePassword = async (req, res, next) => {
   const baseRole = req.baseUrl.split("/")[1];
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ message: errors.array() });
+  }
   const oldPassword = req.body.oldpassword;
   const newPassword = req.body.newpassword;
   try {
