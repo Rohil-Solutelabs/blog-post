@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const postSchema = new Schema(
+const commentsSchema = new Schema(
   {
-    title: {
+    description: {
       type: String,
       required: true,
     },
-    description: {
+    createdBy: {
       type: String,
       required: true,
     },
@@ -40,18 +40,8 @@ const postSchema = new Schema(
         },
       ],
     },
-    comments: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Comment",
-      },
-    ],
   },
   { timestamps: true }
 );
 
-// postSchema.virtual("isVisible").get(function () {
-//   return this.dislikes.totalDislikes < 2;
-// });
-
-module.exports = mongoose.model("Post", postSchema);
+module.exports = mongoose.model("Comment", commentsSchema);

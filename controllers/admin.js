@@ -1,5 +1,6 @@
 const Post = require("../models/post");
 const User = require("../models/user");
+const Comment = require("../models/comment");
 
 exports.getAllPosts = async (req, res, next) => {
   try {
@@ -79,6 +80,7 @@ exports.deleteComment = async (req, res, next) => {
     }
     const comment = post.comments.find((c) => c.id === commentId);
     post.comments.pull(comment);
+    await Comment.findByIdAndRemove(commentId);
     await post.save();
     res.status(200).json({
       message: "Comment Deleted Successfully",
