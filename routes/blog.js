@@ -17,6 +17,15 @@ router.get(
 );
 
 router.get(
+  "/post/:postId",
+  isAuthmiddleware.isauth,
+  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkstatus,
+  isSubscribed,
+  blogController.getPost
+);
+
+router.get(
   "/posts/search",
   isAuthmiddleware.isauth,
   isAuthmiddleware.checkrole(["user"]),
@@ -62,15 +71,6 @@ router.post(
   isAuthmiddleware.checkstatus,
   isSubscribed,
   blogController.postDislike
-);
-
-router.get(
-  "/post/:postId",
-  isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
-  isAuthmiddleware.checkstatus,
-  isSubscribed,
-  blogController.getPost
 );
 
 router.post(
