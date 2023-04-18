@@ -10,6 +10,10 @@ exports.getPosts = async (req, res, next) => {
         path: "author",
         select: "_id",
       })
+      .populate({
+        path: "comments",
+        select: "description likes dislikes"
+      })
       .sort({ updatedAt: -1, likes: -1, comments: -1, dislikes: 1 });
     res.status(200).json({
       message: "Fetched posts successfully.",
@@ -33,6 +37,10 @@ exports.searchPost = async (req, res, next) => {
       .populate({
         path: "author",
         select: "_id",
+      })
+      .populate({
+        path: "comments",
+        select: "description likes dislikes"
       })
       .sort({ updatedAt: -1 });
     res.status(200).json({
@@ -124,6 +132,10 @@ exports.getPost = async (req, res, next) => {
       .populate({
         path: "author",
         select: "_id email name posts",
+      })
+      .populate({
+        path: "comments",
+        select: "description likes dislikes"
       })
       .where("dislikes.totalDislikes")
       .lt(3);

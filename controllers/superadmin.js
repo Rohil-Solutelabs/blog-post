@@ -1,6 +1,7 @@
 const Admin = require("../models/admin");
 const Post = require("../models/post");
 const User = require("../models/user");
+const Comment = require("../models/comment");
 
 exports.getAdmins = async (req, res, next) => {
   try {
@@ -45,6 +46,7 @@ exports.superadminDeletePost = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
+    await Comment.deleteMany({ _id: post.comments });
     await Post.findByIdAndRemove(postId);
     const user = await User.findById(post.author);
     user.posts.pull(postId);
