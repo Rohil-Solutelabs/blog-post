@@ -27,6 +27,7 @@ exports.searchPost = async (req, res, next) => {
   try {
     const posts = await Post.find({
       title: { $regex: search, $options: "i" },
+      "dislikes.totalDislikes": { $lt: 3 },
     })
       .populate({
         path: "author",
