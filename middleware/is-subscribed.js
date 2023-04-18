@@ -9,7 +9,7 @@ const isSubscribed = async (req, res, next) => {
     }
     if (!user.subscribed) {
       return res.status(403).json({
-        message: "You need to have an active subscription to access this route",
+        message: "Sorry, you need to be subscribed to access this route",
       });
     } else {
       next();

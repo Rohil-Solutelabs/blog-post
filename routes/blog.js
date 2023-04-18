@@ -4,13 +4,14 @@ const { body } = require("express-validator");
 const blogController = require("../controllers/blog");
 const isAuthmiddleware = require("../middleware/is-auth");
 const { isSubscribed } = require("../middleware/is-subscribed");
+const ROLES = require("../middleware/roles");
 
 const router = express.Router();
 
 router.get(
   "/posts",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   isSubscribed,
   blogController.getPosts
@@ -19,7 +20,7 @@ router.get(
 router.get(
   "/post/:postId",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   isSubscribed,
   blogController.getPost
@@ -28,7 +29,7 @@ router.get(
 router.get(
   "/posts/search",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   isSubscribed,
   blogController.searchPost
@@ -37,7 +38,7 @@ router.get(
 router.put(
   "/subscription",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   blogController.getSubscription
 );
@@ -45,7 +46,7 @@ router.put(
 router.post(
   "/post",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   isSubscribed,
   [
@@ -58,7 +59,7 @@ router.post(
 router.post(
   "/posts/:postId/like",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   isSubscribed,
   blogController.postLike
@@ -67,7 +68,7 @@ router.post(
 router.post(
   "/posts/:postId/dislike",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   isSubscribed,
   blogController.postDislike
@@ -76,7 +77,7 @@ router.post(
 router.post(
   "/posts/:postId/comment",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   isSubscribed,
   blogController.addComment
@@ -85,7 +86,7 @@ router.post(
 router.delete(
   "/posts/:postId/comment/:commentId",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   isSubscribed,
   blogController.deleteComment
@@ -94,7 +95,7 @@ router.delete(
 router.post(
   "/posts/:postId/comments/:commentId/like",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   isSubscribed,
   blogController.commentLike
@@ -103,7 +104,7 @@ router.post(
 router.post(
   "/posts/:postId/comments/:commentId/dislike",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   isSubscribed,
   blogController.commentDislike
@@ -112,7 +113,7 @@ router.post(
 router.put(
   "/posts/:postId",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   isSubscribed,
   [
@@ -125,7 +126,7 @@ router.put(
 router.delete(
   "/posts/:postId",
   isAuthmiddleware.isauth,
-  isAuthmiddleware.checkrole(["user"]),
+  isAuthmiddleware.checkrole([ROLES.USER]),
   isAuthmiddleware.checkstatus,
   isSubscribed,
   blogController.deletePost

@@ -33,7 +33,7 @@ exports.checkrole = (roles) => async (req, res, next) => {
   if (!req.role || !roles.includes(req.role)) {
     return res
       .status(401)
-      .json({ message: "Sorry, you cannot access this route!" });
+      .json({ message: `Sorry, you cannot access this route as ${req.role}` });
   }
   next();
 };
