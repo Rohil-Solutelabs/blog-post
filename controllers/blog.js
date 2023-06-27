@@ -59,7 +59,7 @@ exports.getSubscription = async (req, res, next) => {
     if (user.subscribed === true) {
       return res.status(409).json({
         message: "You already have a subscription.",
-      });
+      }); 
     }
     user.subscribed = true;
     await user.save();

@@ -33,7 +33,9 @@ mongoose
     app.listen(process.env.PORT || 3000, (err) => {
       if (!err) {
         console.log(`Server listening at Port: ${process.env.PORT || 3000}`);
-      } else console.log(err);
+      } else {
+        console.log(err);
+      }
     });
   })
   .catch((err) => {
