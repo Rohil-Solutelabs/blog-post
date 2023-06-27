@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const Post = require("../models/post");
 const User = require("../models/user");
+const Comment = require("../models/comment");
 
 exports.getPosts = async (req, res, next) => {
   try {
@@ -8,6 +9,10 @@ exports.getPosts = async (req, res, next) => {
       .populate({
         path: "author",
         select: "_id",
+      })
+      .populate({
+        path: "comments",
+        select: "description likes dislikes"
       })
       .sort({ updatedAt: -1, likes: -1, comments: -1, dislikes: 1 });
     res.status(200).json({
@@ -32,6 +37,10 @@ exports.searchPost = async (req, res, next) => {
       .populate({
         path: "author",
         select: "_id",
+      })
+      .populate({
+        path: "comments",
+        select: "description likes dislikes"
       })
       .sort({ updatedAt: -1 });
     res.status(200).json({
@@ -124,6 +133,10 @@ exports.getPost = async (req, res, next) => {
         path: "author",
         select: "_id email name posts",
       })
+      .populate({
+        path: "comments",
+        select: "description likes dislikes"
+      })
       .where("dislikes.totalDislikes")
       .lt(3);
     if (!post) {
@@ -195,11 +208,12 @@ exports.addComment = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-    const newComment = {
+    const newComment = new Comment({
       description: comments.description,
       createdBy: createdBy,
       author: authorId,
-    };
+    });
+    await newComment.save();
     post.comments.push(newComment);
     await post.save();
     res.status(200).json({
@@ -224,16 +238,18 @@ exports.deleteComment = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-    const comment = post.comments.find((c) => c.id === commentId);
+    const comment = post.comments.find((c) => c.toString() === commentId);
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
+    const delcomment = await Comment.findById(commentId);
     if (
-      comment.author.toString() === userId ||
+      delcomment.author.toString() === userId ||
       post.author.toString() === userId
     ) {
-      post.comments.pull(comment);
+      post.comments.pull(commentId);
       await post.save();
+      await Comment.findByIdAndRemove(commentId);
       return res.status(200).json({
         message: "Comment Deleted Successfully",
       });
@@ -326,7 +342,7 @@ exports.commentLike = async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    const comment = post.comments.id(commentId);
+    const comment = await Comment.findById(commentId);
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
@@ -347,7 +363,7 @@ exports.commentLike = async (req, res, next) => {
 
     comment.likes.totalLikes += 1;
     comment.likes.likedBy.push(user);
-    await post.save();
+    await comment.save();
     res.status(200).json({ message: "Comment liked successfully" });
   } catch (err) {
     if (!err.statusCode) {
@@ -366,7 +382,7 @@ exports.commentDislike = async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    const comment = post.comments.id(commentId);
+    const comment = await Comment.findById(commentId);
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
@@ -384,7 +400,7 @@ exports.commentDislike = async (req, res, next) => {
     }
     comment.dislikes.totalDislikes += 1;
     comment.dislikes.disLikedBy.push(user);
-    await post.save();
+    await comment.save();
     res.status(200).json({ message: "Comment Disliked successfully" });
   } catch (err) {
     if (!err.statusCode) {
@@ -408,6 +424,7 @@ exports.deletePost = async (req, res, next) => {
       error.statusCode = 403;
       throw error;
     }
+    await Comment.deleteMany({ _id: post.comments });
     await Post.findByIdAndRemove(postId);
     const user = await User.findById(req.userId);
     user.posts.pull(postId);
